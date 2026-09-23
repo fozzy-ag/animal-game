@@ -1,0 +1,15 @@
+const SOUND_URLS = {
+  "cat": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+  "dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+  "cow": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+  "pig": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+  "chicken": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+  "bird": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+  "frog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+  "lion": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+  "monkey": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+  "sheep": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+  "horse": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+  "rabbit": "data:audio/mpeg;base64,SUQzAwAAAAAfdkNPTU0AAAAPAAA...",
+  "elephant": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAA...",
+};

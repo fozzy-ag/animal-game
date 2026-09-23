@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Tierfreunde</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;touch-action:manipulation}
+body{font-family:-apple-system,'Segoe UI',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:background 0.6s}
+#startScreen{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff6b6b,#feca57,#48dbfb,#ff9ff3);background-size:400% 400%;animation:bgShift 4s ease infinite}
+@keyframes bgShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#startScreen h1{font-size:36px;color:#fff;text-shadow:2px 2px 8px rgba(0,0,0,0.3);margin-bottom:10px}
+#startScreen .subtitle{font-size:18px;color:rgba(255,255,255,0.9);margin-bottom:30px}
+#startScreen .preview{font-size:60px;animation:bounce 1s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+#playBtn{margin-top:30px;padding:18px 50px;font-size:28px;font-weight:bold;border:none;border-radius:50px;cursor:pointer;background:#fff;color:#ff6b6b;box-shadow:0 6px 20px rgba(0,0,0,0.2);animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+#gameScreen{display:none;width:100%;height:100%;position:relative;flex-direction:column;align-items:center;justify-content:center}
+#animalEmoji{font-size:180px;transition:transform 0.3s;cursor:pointer;position:relative;z-index:2;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.2))}
+#animalEmoji.tapped{animation:popBounce 0.6s ease}
+@keyframes popBounce{0%{transform:scale(1) rotate(0)}25%{transform:scale(1.3) rotate(-5deg)}50%{transform:scale(0.9) rotate(5deg)}75%{transform:scale(1.15) rotate(-2deg)}100%{transform:scale(1) rotate(0)}}
+#animalName{font-size:32px;font-weight:bold;color:#fff;text-shadow:2px 2px 6px rgba(0,0,0,0.3);margin-top:20px;opacity:0;transition:opacity 0.4s;z-index:2}
+#animalName.show{opacity:1}
+#hint{position:absolute;top:15%;font-size:22px;color:rgba(255,255,255,0.8);z-index:2;animation:hintPulse 2s ease infinite}
+@keyframes hintPulse{0%,100%{opacity:0.5}50%{opacity:1}}
+#nav{position:fixed;bottom:30px;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:10;padding:10px}
+.dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.4);transition:all 0.3s}
+.dot.active{background:#fff;transform:scale(1.3);box-shadow:0 0 8px rgba(255,255,255,0.6)}
+#arrowL,#arrowR{position:fixed;top:50%;transform:translateY(-50%);font-size:40px;color:rgba(255,255,255,0.5);cursor:pointer;z-index:10;padding:20px;transition:color 0.2s}
+#arrowL{left:5px}#arrowR{right:5px}
+#arrowL:active,#arrowR:active{color:#fff}
+.star{position:fixed;pointer-events:none;z-index:50;font-size:28px;animation:starFly 1s ease-out forwards}
+@keyframes starFly{0%{opacity:1;transform:translate(0,0) scale(1) rotate(0)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0.3) rotate(180deg)}}
+</style>
+</head>
+<body>
+<div id="startScreen">
+  <h1>Tierfreunde</h1>
+  <div class="subtitle">Tippe auf die Tiere!</div>
+  <div class="preview">🐱 🐶 🐮</div>
+  <button id="playBtn">Los geht's!</button>
+</div>
+<div id="gameScreen">
+  <div id="hint">Antippen!</div>
+  <div id="animalEmoji"></div>
+  <div id="animalName"></div>
+  <div id="arrowL">&#10094;</div>
+  <div id="arrowR">&#10095;</div>
+  <div id="nav"></div>
+</div>
+<script>
+var ASSET_BASE = 'file:///android_asset/sounds/';
+var ANIMALS = [
+  {emoji:'\u{1F431}',name:'Katze',colors:['#ff9a9e','#fad0c4'],sound:'cat'},
+  {emoji:'\u{1F436}',name:'Hund',colors:['#a18cd1','#fbc2eb'],sound:'dog'},
+  {emoji:'\u{1F42E}',name:'Kuh',colors:['#667eea','#764ba2'],sound:'cow'},
+  {emoji:'\u{1F437}',name:'Schwein',colors:['#f093fb','#f5576c'],sound:'pig'},
+  {emoji:'\u{1F414}',name:'Huhn',colors:['#ffecd2','#fcb69f'],sound:'chicken'},
+  {emoji:'\u{1F426}',name:'Vogel',colors:['#89f7fe','#66a6ff'],sound:'bird'},
+  {emoji:'\u{1F438}',name:'Frosch',colors:['#a8edea','#fed6e3'],sound:'frog'},
+  {emoji:'\u{1F981}',name:'L\u00f6we',colors:['#f6d365','#fda085'],sound:'lion'},
+  {emoji:'\u{1F435}',name:'Affe',colors:['#fbc2eb','#a6c1ee'],sound:'monkey'},
+  {emoji:'\u{1F411}',name:'Schaf',colors:['#d4fc79','#96e6a1'],sound:'sheep'},
+  {emoji:'\u{1F410}',name:'Ziege',colors:['#e0c3fc','#8ec5fc'],sound:'goat'},
+  {emoji:'\u{1F40E}',name:'Pferd',colors:['#ffeaa7','#dfe6e9'],sound:'horse'},
+  {emoji:'\u{1F430}',name:'Hase',colors:['#fd79a8','#e17055'],sound:'rabbit'},
+  {emoji:'\u{1F419}',name:'Oktopus',colors:['#74b9ff','#0984e3'],sound:'octopus'},
+  {emoji:'\u{1F422}',name:'Schildkr\u00f6te',colors:['#00b894','#55efc4'],sound:'turtle'},
+  {emoji:'\u{1F418}',name:'Elefant',colors:['#636e72','#b2bec3'],sound:'elephant'},
+  {emoji:'\u{1F986}',name:'Ente',colors:['#ffe259','#ffa751'],sound:'duck'}
+];
+var idx=0,audioCtx=null,hintTimer=null,currentAudio=null;
+
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume()}
+
+function stopCurrentSound(){
+  if(currentAudio){try{currentAudio.pause();currentAudio.currentTime=0}catch(e){}currentAudio=null}
+  if(audioCtx&&audioCtx.state==='running'){try{audioCtx.close()}catch(e){}audioCtx=null}
+}
+
+function playRealSound(type){
+  stopCurrentSound();
+  var url=ASSET_BASE+type+'.mp3';
+  var a=new Audio();
+  a.src=url;
+  a.volume=1.0;
+  currentAudio=a;
+  a.play().catch(function(e){console.log('Audio play failed:',e)});
+}
+
+function playSynthSound(type){
+  stopCurrentSound();
+  initAudio();
+  var c=audioCtx,now=c.currentTime;
+  if(type==='octopus'){
+    var n=c.createBuffer(1,c.sampleRate*0.8,c.sampleRate);
+    var d=n.getChannelData(0);
+    for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
+    var src=c.createBufferSource();src.buffer=n;
+    var f=c.createBiquadFilter();f.type='lowpass';
+    f.frequency.setValueAtTime(200,now);
+    f.frequency.exponentialRampToValueAtTime(800,now+0.2);
+    f.frequency.exponentialRampToValueAtTime(150,now+0.6);
+    f.Q.value=8;
+    var g=c.createGain();
+    g.gain.setValueAtTime(0,now);
+    g.gain.linearRampToValueAtTime(0.3,now+0.1);
+    g.gain.exponentialRampToValueAtTime(0.01,now+0.7);
+    src.connect(f);f.connect(g);g.connect(c.destination);
+    src.start(now);src.stop(now+0.8);
+  }else if(type==='turtle'){
+    var o=c.createOscillator();o.type='sine';
+    o.frequency.setValueAtTime(300,now);
+    o.frequency.linearRampToValueAtTime(250,now+0.3);
+    var o2=c.createOscillator();o2.type='triangle';o2.frequency.value=600;
+    var g2=c.createGain();g2.gain.value=0.05;o2.connect(g2);
+    var f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=500;
+    var g=c.createGain();
+    g.gain.setValueAtTime(0.25,now);
+    g.gain.exponentialRampToValueAtTime(0.01,now+0.4);
+    o.connect(f);f.connect(g);g2.connect(g);g.connect(c.destination);
+    o.start(now);o.stop(now+0.4);
+    o2.start(now);o2.stop(now+0.4);
+  }
+}
+
+function playSound(type){
+  stopCurrentSound();
+  initAudio();
+  if(type==='octopus'||type==='turtle')playSynthSound(type);
+  else playRealSound(type);
+}
+
+function spawnStars(x,y){
+  var emojis=['\u2B50','\u2728','\u{1F31F}','\u2764\uFE0F','\u{1F496}'];
+  for(var i=0;i<6;i++){
+    var s=document.createElement('div');s.className='star';
+    s.textContent=emojis[i%emojis.length];
+    s.style.left=x+'px';s.style.top=y+'px';
+    s.style.setProperty('--dx',(Math.random()*120-60)+'px');
+    s.style.setProperty('--dy',(-60-Math.random()*80)+'px');
+    document.body.appendChild(s);
+    setTimeout(function(el){return function(){el.remove()}}(s),1000);
+  }
+}
+
+function showAnimal(i){
+  stopCurrentSound();
+  idx=(i+ANIMALS.length)%ANIMALS.length;
+  var a=ANIMALS[idx];
+  document.body.style.background='linear-gradient(135deg,'+a.colors[0]+','+a.colors[1]+')';
+  var emoji=document.getElementById('animalEmoji');
+  emoji.textContent=a.emoji;
+  emoji.classList.remove('tapped');
+  var name=document.getElementById('animalName');
+  name.textContent=a.name;
+  name.classList.remove('show');
+  var dots=document.querySelectorAll('.dot');
+  for(var j=0;j<dots.length;j++)dots[j].classList.toggle('active',j===idx);
+  clearTimeout(hintTimer);
+  var hint=document.getElementById('hint');
+  hint.style.display='block';
+  hintTimer=setTimeout(function(){hint.style.display='none'},3000);
+}
+
+function tapAnimal(e){
+  var emoji=document.getElementById('animalEmoji');
+  var name=document.getElementById('animalName');
+  emoji.classList.remove('tapped');
+  void emoji.offsetWidth;
+  emoji.classList.add('tapped');
+  name.classList.add('show');
+  playSound(ANIMALS[idx].sound);
+  var x=e.touches?e.touches[0].clientX:e.clientX;
+  var y=e.touches?e.touches[0].clientY:e.clientY;
+  spawnStars(x,y);
+  clearTimeout(hintTimer);
+  document.getElementById('hint').style.display='none';
+}
+
+document.getElementById('startScreen').addEventListener('click',function(){
+  initAudio();
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('gameScreen').style.display='flex';
+  var nav=document.getElementById('nav');nav.innerHTML='';
+  ANIMALS.forEach(function(_,i){
+    var d=document.createElement('div');d.className='dot';
+    d.addEventListener('click',function(e){e.stopPropagation();showAnimal(i)});
+    nav.appendChild(d);
+  });
+  showAnimal(0);
+});
+document.getElementById('animalEmoji').addEventListener('click',tapAnimal);
+document.getElementById('arrowL').addEventListener('click',function(e){e.stopPropagation();showAnimal(idx-1)});
+document.getElementById('arrowR').addEventListener('click',function(e){e.stopPropagation();showAnimal(idx+1)});
+var touchStartX=0;
+document.addEventListener('touchstart',function(e){
+  if(document.getElementById('gameScreen').style.display!=='flex')return;
+  touchStartX=e.touches[0].clientX;
+});
+document.addEventListener('touchend',function(e){
+  if(document.getElementById('gameScreen').style.display!=='flex')return;
+  var dx=e.changedTouches[0].clientX-touchStartX;
+  if(Math.abs(dx)>50)showAnimal(idx+(dx<0?1:-1));
+});
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('gameScreen').style.display!=='flex')return;
+  if(e.key==='ArrowLeft')showAnimal(idx-1);
+  else if(e.key==='ArrowRight')showAnimal(idx+1);
+  else if(e.key===' ')tapAnimal(e);
+});
+</script>
+</body>
+</html>
