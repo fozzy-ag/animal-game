@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/data/data/com.termux/files/usr/bin/env bash
 set -e
 
-PROJECT="/data/data/com.termux/files/home/animal-game"
+PROJECT="$(cd "$(dirname "$0")" && pwd)"
 ANDROID_JAR="$PROJECT/stubs/android.jar"
 BUILD="$PROJECT/build"
 JAVA_SRC="$PROJECT/java"

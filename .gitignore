@@ -1,3 +1,8 @@
 *.keystore
 *.idsig
 build/
+
+# Staging area for download_animals.sh / fetch_sounds.sh.
+# Not part of the build: build.sh only packages assets/.
+sounds/
+sounds.js

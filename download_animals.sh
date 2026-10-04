@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/data/data/com.termux/files/usr/bin/env bash
 # Download animal sounds from wavsource.com
-SOUND_DIR="/data/data/com.termux/files/home/animal-game/sounds"
+PROJECT="$(cd "$(dirname "$0")" && pwd)"
+SOUND_DIR="$PROJECT/sounds"
 
 # Create temporary directory for WAV files
 mkdir -p "$SOUND_DIR/wav"
@@ -25,15 +26,20 @@ for animal in "${!animals[@]}"; do
     file="${animals[$animal]}"
     url="https://www.wavsource.com/animals/$file"
     echo "Downloading $animal..."
-    curl -L -o "$SOUND_DIR/wav/$file" "$url" 2>/dev/null
-    
-    # Check if download succeeded
-    if [ -f "$SOUND_DIR/wav/$file" ]; then
-        size=$(stat -c%s "$SOUND_DIR/wav/$file" 2>/dev/null || echo "0")
-        echo "  Downloaded $file: $size bytes"
-    else
-        echo "  Failed to download $file"
+    if ! curl -fsSL -o "$SOUND_DIR/wav/$file" "$url" 2>/dev/null; then
+        echo "  FAILED: HTTP error fetching $file"
+        rm -f "$SOUND_DIR/wav/$file"
+        continue
     fi
+
+    size=$(stat -c%s "$SOUND_DIR/wav/$file" 2>/dev/null || echo 0)
+    if [ "$size" -lt 1000 ]; then
+        echo "  FAILED: $file is only $size bytes - likely an error page, not audio"
+        rm -f "$SOUND_DIR/wav/$file"
+        continue
+    fi
+
+    echo "  Downloaded $file: $size bytes"
 done
 
 echo ""

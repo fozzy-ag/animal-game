@@ -71,7 +71,7 @@ sizes = {
     'xxhdpi': 144,
 }
 
-base = os.path.expanduser('~/animal-game/res')
+base = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'res')
 for density, size in sizes.items():
     d = f'{base}/mipmap-{density}'
     os.makedirs(d, exist_ok=True)

@@ -1,5 +1,6 @@
-#!/bin/bash
-DIR="/data/data/com.termux/files/home/animal-game/sounds"
+#!/data/data/com.termux/files/usr/bin/env bash
+PROJECT="$(cd "$(dirname "$0")" && pwd)"
+DIR="$PROJECT/sounds"
 UA="Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36"
 
 download_from_pixabay() {
@@ -28,22 +29,30 @@ download_from_pixabay() {
     fi
     
     echo "  Downloading: $cdn_url"
-    
-    curl -sL -H "User-Agent: $UA" -H "Referer: https://pixabay.com/" -o "$DIR/${animal}.mp3" "$cdn_url"
-    
-    local size=$(stat -c%s "$DIR/${animal}.mp3" 2>/dev/null || echo 0)
-    
+
+    local tmp="$DIR/${animal}.mp3.part"
+    mkdir -p "$DIR"
+
+    curl -sL -H "User-Agent: $UA" -H "Referer: https://pixabay.com/" -o "$tmp" "$cdn_url"
+
+    local size=$(stat -c%s "$tmp" 2>/dev/null || echo 0)
+
     if [ "$size" -lt 1000 ]; then
         echo "  FAILED: File too small ($size bytes)"
-        rm -f "$DIR/${animal}.mp3"
+        rm -f "$tmp"
         return 1
     fi
-    
+
+    # Only replace an existing sound once the new one is known to be valid
+    mv "$tmp" "$DIR/${animal}.mp3"
+
     echo "  SUCCESS: ${animal}.mp3 ($size bytes)"
     return 0
 }
 
-rm -f "$DIR"/*.mp3 "$DIR"/*.wav 2>/dev/null
+# NOTE: existing sounds are never deleted up front. Each animal is downloaded to
+# a .part file and only moved into place once it has been validated, so a failed
+# fetch cannot destroy sounds that were already downloaded successfully.
 
 download_from_pixabay "cat" "cat%20meow"
 download_from_pixabay "dog" "dog%20bark"
