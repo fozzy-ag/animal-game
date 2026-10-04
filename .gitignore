@@ -8,3 +8,7 @@ build/
 # assets/sounds/, which IS part of the build and must be tracked.
 /sounds/
 sounds.js
+
+# Python bytecode cache
+__pycache__/
+*.pyc
