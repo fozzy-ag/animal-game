@@ -1,4 +1,4 @@
-package com.animal.game;
+package com.animal.game.legacy;
 
 import android.app.Activity;
 import android.os.Build;

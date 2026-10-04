@@ -24,15 +24,37 @@ Provenance for the sound effects packaged in `assets/sounds/`.
   because the cartoon quality suits the app better.
 - **Attribution:** not required under CC0. Recorded anyway.
 
-## Remaining sounds
+## Remaining sounds — UNVERIFIED PROVENANCE
 
-`cat`, `cow`, `pig`, `chicken`, `bird`, `frog`, `lion`, `monkey`, `sheep`,
-`goat`, `horse`, `rabbit`, `elephant`, `duck` were fetched by
-`fetch_sounds.sh`, which scrapes the Pixabay search pages for
-`cdn.pixabay.com` download links. The Pixabay Content License permits
-free use including commercially, but their terms do not strictly require
-attribution. The exact source URL for each file was not recorded, so
-individual provenance for these 14 files is unknown.
+**These 14 files cannot be traced to a specific licence and are the largest
+unresolved risk in the project.**
+
+- `bird`, `cat`, `chicken`, `cow`, `dog`, `duck`, `elephant`, `frog`,
+  `goat`, `horse`, `lion`, `monkey`, `pig`, `rabbit`, `sheep`
+
+They were fetched by `fetch_sounds.sh`, which scrapes Pixabay search pages
+for `cdn.pixabay.com` download links. The Pixabay Content License permits
+free use including commercially, and does not strictly require attribution,
+so nothing here is obviously infringing. The problem is that the script
+recorded only the CDN path, not the page each file came from, and no
+per-file licence text or contributor name was captured.
+
+The consequence is that **individual provenance for these 14 files is
+unknown and cannot currently be reconstructed.** It cannot be confirmed
+whether a given file was Pixabay's own content, which under the Pixabay
+Content License carries no attribution requirement, or was uploaded by a
+third party under a different or incompatible licence that Pixabay's terms
+do not fully address.
+
+Decision taken 2026-10-04: keep the files, and document the exposure rather
+than re-record them. Suitable for private use and sideloading. This should
+be resolved before any commercial or public distribution.
+
+To resolve, re-fetch each from a source with a stable URL and an explicit
+licence, and record the URL, author and licence per file in this file, in
+the same format as the donkey entry above.
+
+## Sounds with no audio file
 
 `octopus` and `turtle` have no audio file: they are synthesized at
 runtime with the WebAudio API in `playSynthSound()` (`assets/game.html`).
@@ -46,9 +68,10 @@ and an explicit license, and record the URL here when adding a sound.
 
 # Artwork credits
 
-Applies to the Android 7-10 build only (`android7-images` branch). The
-`main` branch draws its animals with the system emoji font and ships no
-artwork.
+Applies to the `android7-images` branch, which is published as a separate
+app (`com.animal.game.legacy`) for devices whose emoji font predates
+Unicode 13. The `main` branch draws its animals with the system emoji font
+and ships no artwork apart from one hand-drawn donkey image; see below.
 
 ## assets/img/*.png
 
