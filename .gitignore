@@ -4,5 +4,7 @@ build/
 
 # Staging area for download_animals.sh / fetch_sounds.sh.
 # Not part of the build: build.sh only packages assets/.
-sounds/
+# Anchored with a leading slash: a bare "sounds/" would also match
+# assets/sounds/, which IS part of the build and must be tracked.
+/sounds/
 sounds.js
