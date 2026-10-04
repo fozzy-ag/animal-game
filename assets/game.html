@@ -12,7 +12,8 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;display:flex;flex-direction
 @keyframes bgShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 #startScreen h1{font-size:36px;color:#fff;text-shadow:2px 2px 8px rgba(0,0,0,0.3);margin-bottom:10px}
 #startScreen .subtitle{font-size:18px;color:rgba(255,255,255,0.9);margin-bottom:30px}
-#startScreen .preview{font-size:60px;animation:bounce 1s ease infinite}
+#startScreen .preview{font-size:60px;animation:bounce 1s ease infinite;display:flex;gap:10px;justify-content:center}
+#startScreen .preview img{width:76px;height:76px}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
 #playBtn{margin-top:30px;padding:18px 50px;font-size:28px;font-weight:bold;border:none;border-radius:50px;cursor:pointer;background:#fff;color:#ff6b6b;box-shadow:0 6px 20px rgba(0,0,0,0.2);animation:pulse 1.5s ease infinite}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
@@ -39,7 +40,7 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;display:flex;flex-direction
 <div id="startScreen">
   <h1>Tierfreunde</h1>
   <div class="subtitle">Tippe auf die Tiere!</div>
-  <div class="preview">🐱 🐶 🐮</div>
+  <div class="preview"><img src="file:///android_asset/img/cat.png" alt=""><img src="file:///android_asset/img/dog.png" alt=""><img src="file:///android_asset/img/cow.png" alt=""></div>
   <button id="playBtn">Los geht's!</button>
 </div>
 <div id="gameScreen">
@@ -54,52 +55,27 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;display:flex;flex-direction
 var ASSET_BASE = 'file:///android_asset/sounds/';
 var ASSET_IMG = 'file:///android_asset/img/';
 var ANIMALS = [
-  {emoji:'\u{1F431}',name:'Katze',colors:['#ff9a9e','#fad0c4'],sound:'cat'},
-  {emoji:'\u{1F436}',name:'Hund',colors:['#a18cd1','#fbc2eb'],sound:'dog'},
-  {emoji:'\u{1F42E}',name:'Kuh',colors:['#667eea','#764ba2'],sound:'cow'},
-  {emoji:'\u{1F437}',name:'Schwein',colors:['#f093fb','#f5576c'],sound:'pig'},
-  {emoji:'\u{1F414}',name:'Huhn',colors:['#ffecd2','#fcb69f'],sound:'chicken'},
-  {emoji:'\u{1F426}',name:'Vogel',colors:['#89f7fe','#66a6ff'],sound:'bird'},
-  {emoji:'\u{1F438}',name:'Frosch',colors:['#a8edea','#fed6e3'],sound:'frog'},
-  {emoji:'\u{1F981}',name:'L\u00f6we',colors:['#f6d365','#fda085'],sound:'lion'},
-  {emoji:'\u{1F435}',name:'Affe',colors:['#fbc2eb','#a6c1ee'],sound:'monkey'},
-  {emoji:'\u{1F411}',name:'Schaf',colors:['#d4fc79','#96e6a1'],sound:'sheep'},
-  {emoji:'\u{1F410}',name:'Ziege',colors:['#e0c3fc','#8ec5fc'],sound:'goat'},
+  {emoji:'\u{1F431}',name:'Katze',colors:['#ff9a9e','#fad0c4'],sound:'cat',img:'cat'},
+  {emoji:'\u{1F436}',name:'Hund',colors:['#a18cd1','#fbc2eb'],sound:'dog',img:'dog'},
+  {emoji:'\u{1F42E}',name:'Kuh',colors:['#667eea','#764ba2'],sound:'cow',img:'cow'},
+  {emoji:'\u{1F437}',name:'Schwein',colors:['#f093fb','#f5576c'],sound:'pig',img:'pig'},
+  {emoji:'\u{1F414}',name:'Huhn',colors:['#ffecd2','#fcb69f'],sound:'chicken',img:'chicken'},
+  {emoji:'\u{1F426}',name:'Vogel',colors:['#89f7fe','#66a6ff'],sound:'bird',img:'bird'},
+  {emoji:'\u{1F438}',name:'Frosch',colors:['#a8edea','#fed6e3'],sound:'frog',img:'frog'},
+  {emoji:'\u{1F981}',name:'L\u00f6we',colors:['#f6d365','#fda085'],sound:'lion',img:'lion'},
+  {emoji:'\u{1F435}',name:'Affe',colors:['#fbc2eb','#a6c1ee'],sound:'monkey',img:'monkey'},
+  {emoji:'\u{1F411}',name:'Schaf',colors:['#d4fc79','#96e6a1'],sound:'sheep',img:'sheep'},
+  {emoji:'\u{1F410}',name:'Ziege',colors:['#e0c3fc','#8ec5fc'],sound:'goat',img:'goat'},
   {emoji:'\u{1FACF}',name:'Esel',colors:['#f7971e','#ffd200'],sound:'donkey',img:'donkey'},
-  {emoji:'\u{1F40E}',name:'Pferd',colors:['#ffeaa7','#dfe6e9'],sound:'horse'},
-  {emoji:'\u{1F430}',name:'Hase',colors:['#fd79a8','#e17055'],sound:'rabbit'},
-  {emoji:'\u{1F419}',name:'Oktopus',colors:['#74b9ff','#0984e3'],sound:'octopus'},
-  {emoji:'\u{1F422}',name:'Schildkr\u00f6te',colors:['#00b894','#55efc4'],sound:'turtle'},
-  {emoji:'\u{1F418}',name:'Elefant',colors:['#636e72','#b2bec3'],sound:'elephant'},
-  {emoji:'\u{1F986}',name:'Ente',colors:['#ffe259','#ffa751'],sound:'duck'}
+  {emoji:'\u{1F40E}',name:'Pferd',colors:['#ffeaa7','#dfe6e9'],sound:'horse',img:'horse'},
+  {emoji:'\u{1F430}',name:'Hase',colors:['#fd79a8','#e17055'],sound:'rabbit',img:'rabbit'},
+  {emoji:'\u{1F419}',name:'Oktopus',colors:['#74b9ff','#0984e3'],sound:'octopus',img:'octopus'},
+  {emoji:'\u{1F422}',name:'Schildkr\u00f6te',colors:['#00b894','#55efc4'],sound:'turtle',img:'turtle'},
+  {emoji:'\u{1F418}',name:'Elefant',colors:['#636e72','#b2bec3'],sound:'elephant',img:'elephant'},
+  {emoji:'\u{1F986}',name:'Ente',colors:['#ffe259','#ffa751'],sound:'duck',img:'duck'}
 ];
 var idx=0,audioCtx=null,hintTimer=null,currentAudio=null;
 
-// U+1FACF DONKEY arrived in Unicode 13 (Android 11), so Android 7-10 draws a
-// "tofu" box for it. U+1F986 DUCK is Unicode 9.0 and is marginal on Android
-// 7.0 specifically. Test every animal rather than assuming, then degrade in
-// three steps: real emoji -> drawn image -> the animal's name as text.
-function glyphSupported(ch){
-  try{
-    var c=document.createElement('canvas');c.width=c.height=48;
-    var x=c.getContext('2d');
-    x.font='32px sans-serif';x.textBaseline='top';
-    x.clearRect(0,0,48,48);x.fillText(ch,2,2);
-    var a=x.getImageData(0,0,48,48).data;
-    var ink=false,i;
-    for(i=3;i<a.length;i+=4){if(a[i]>10){ink=true;break}}
-    if(!ink)return false;
-    x.clearRect(0,0,48,48);x.fillText('\uFFFF',2,2);
-    var b=x.getImageData(0,0,48,48).data;
-    for(i=3;i<a.length;i+=4){if(a[i]!==b[i])return true}
-    return false;
-  }catch(e){return false}
-}
-
-ANIMALS.forEach(function(a){
-  a.emojiOk=glyphSupported(a.emoji);
-  a.useImg=!a.emojiOk&&!!a.img;
-});
 
 function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume()}
 
@@ -180,9 +156,7 @@ function showAnimal(i){
   var a=ANIMALS[idx];
   document.body.style.background='linear-gradient(135deg,'+a.colors[0]+','+a.colors[1]+')';
   var emoji=document.getElementById('animalEmoji');
-  if(a.useImg)emoji.innerHTML='<img src="'+ASSET_IMG+a.img+'.png" alt="">';
-  else if(a.emojiOk)emoji.textContent=a.emoji;
-  else emoji.textContent=a.name;
+  emoji.innerHTML='<img src="'+ASSET_IMG+a.img+'.png" alt="'+a.name+'">';
   emoji.classList.remove('tapped');
   var name=document.getElementById('animalName');
   name.textContent=a.name;
